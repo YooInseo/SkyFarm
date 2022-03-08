@@ -1,0 +1,6 @@
+name: Trade
+version: '${project.version}'
+main: trade.skyfarm.SkyFarm
+api-version: 1.18
+commands:
+  거래:
