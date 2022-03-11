@@ -2,7 +2,7 @@ package trade.skyfarm.gui;
 
 public enum Type {
 
-    Minus("§c-"),Plus("§a+"),Multiply("§b*");
+    Minus("§c-"),Plus("§a+"), Multiply("§b*");
 
     private String a = "";
     Type(String a){

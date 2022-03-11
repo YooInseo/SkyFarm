@@ -26,7 +26,6 @@ public final class SkyFarm extends JavaPlugin {
 
         Listener[] listeners = new Listener[]{new InventoryClick(), new InventoryClose()};
         PluginManager pm = Bukkit.getPluginManager();
-
         Arrays.stream(listeners).forEach(classes->{pm.registerEvents(classes,this);});
     }
 
