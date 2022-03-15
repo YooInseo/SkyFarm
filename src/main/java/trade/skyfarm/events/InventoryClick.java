@@ -1,107 +1,79 @@
 package trade.skyfarm.events;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
+import trade.skyfarm.SkyFarm;
+import trade.skyfarm.cmd.cmds;
+import trade.skyfarm.data.PlayerData;
 import trade.skyfarm.data.readytype;
 import trade.skyfarm.gui.TargetChest;
-import trade.skyfarm.gui.Type;
 
 public class InventoryClick implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event){
         Player player = (Player) event.getWhoClicked();
-        Inventory inv = event.getInventory();
         String title = event.getView().getTitle();
 
-         if(title.equalsIgnoreCase("")){
+        if(title.equalsIgnoreCase("")){
             return;
         } else{
-
-             player.sendMessage(event.getCurrentItem().getType().name());
-
-             if(title.equalsIgnoreCase(TargetChest.title +  player.getName())) {
+             if (title.equalsIgnoreCase(TargetChest.title)) {
                  if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR
                          || !event.getCurrentItem().hasItemMeta()) {
+                     return;
+                 } else{
+                     if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§e§l거래금")){
+                         player.sendMessage(SkyFarm.prefix + "§a상대방에게 줄 금액을 입력하세요!");
+                         TargetChest.getreceive(player).setisSetCoin(true);
+                         player.closeInventory();
+                     } else{
+                         Player Target = Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName());
+                         if(!event.isShiftClick()){
+                             if(!player.equals(Target)){
+                                player.openInventory(TargetChest.getreceive(Target).getInv());
+                                TargetChest.getreceive(Target).setOpen(true);
+                                TargetChest.getreceive(player).setOpen(true);
+
+                             } else{
+                                 player.openInventory(TargetChest.getreceive(player).getInv());
+                                 TargetChest.getreceive(player).setOpen(true);
+                                 TargetChest.getreceive(Target).setOpen(true);
+                             }
+                         } else{
+                             if(player.equals(Target)){
+
+                                 switch (TargetChest.getreceive(player).getReady()){
+                                     case NotReady:
+                                         TargetChest.getreceive(player).setReady(readytype.Ready);
+                                         break;
+                                     case Ready:
+                                         TargetChest.getreceive(player).setReady(readytype.NotReady);
+                                         break;
+                                 }
+                                 if(TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Ready) && TargetChest.getreceive(player).getReady().equals(readytype.Ready)){
+                                     TargetChest.getreceive(player).setReady(readytype.Accept);
+                                     cmds.receive.get(TargetChest.getreceive(player).getPlayer().getUniqueId()).setReady(readytype.Accept);
+                                     TargetChest.getreceive(player).getPlayer().closeInventory();
+                                     player.closeInventory();
+                                 }
+                             }
+                         }
+                     }
                      event.setCancelled(true);
-                 } else {
-//                     Player Target = TargetChest.getreceive(player).getPlayer();
-//                     test(player, Target, event, title);
-//                     test(Target,Target, event,title);
-//                     event.setCancelled(true);
-                  }
+                 }
+             } else if(title.equalsIgnoreCase(player.getName())){
+                 event.setCancelled(false);
+             } else if(title.equalsIgnoreCase(TargetChest.getreceive(player).getRequest().getDisplayName())){
+                 event.setCancelled(true);
              }
         }
     }
-    public void Shift(Player player, boolean shift, int coin){
-        if(!shift){
-            TargetChest.getreceive(player).SetCoins(coin);
-        } else{
-            TargetChest.getreceive(player).SetCoins(coin * 64);
-        }
-    }
-    public void test(Player player,Player Target, InventoryClickEvent event ,String title){
-
-        String name = event.getCurrentItem().getItemMeta().getDisplayName();
-        if(title.equalsIgnoreCase(TargetChest.title +  player.getName())) {
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR
-                    || !event.getCurrentItem().hasItemMeta()) {
-                event.setCancelled(true);
-            } else {
-                if (name.equalsIgnoreCase("§f" + Target.getName())){
-
-
-                } else if (name.equalsIgnoreCase("§f" + player.getName())){
-
-
-                }else if(name.equalsIgnoreCase("§d설정 §7(클릭해서 변경)")){
-                    switch (TargetChest.getreceive(Target).getType()){
-                        case Plus:
-                            TargetChest.getreceive(Target).setType(Type.Minus);
-                            break;
-                        case Minus:
-                            TargetChest.getreceive(Target).setType(Type.Plus);
-                            break;
-                        case Multiply:
-                            TargetChest.getreceive(Target).setType(Type.Multiply);
-                            break;
-                    }
-                }
-                switch (name){
-                    case "§f1,000":
-                        Shift(Target, event.isShiftClick(),1000);
-                        break;
-                    case "§f10,000":
-                        Shift(Target,event.isShiftClick(),10000);
-                        break;
-                    case "§f100,000":
-                        Shift(Target,event.isShiftClick(),100000);
-                        break;
-                    case "§f1,000,000":
-                        Shift(Target,event.isShiftClick(),1000000);
-                        break;
-                    case "§c초기화":
-                        TargetChest.getreceive(Target).SetCoins(0);
-                        break;
-                    case "§c준비안됨":
-                        TargetChest.getreceive(Target).setReady(player,Target, readytype.Ready);
-                        break;
-                    case "§a준비됨":
-                        TargetChest.getreceive(Target).setReady(player,Target,readytype.Accept);
-                        break;
-                    case "§b§l수락":
-                        TargetChest.AcceptTrade(player, Target);
-                        break;
-                }
-            }
-        }
-    }
-
-    public boolean set(){
-        return false;
+    public PlayerData getTargetData(Player player){
+        return cmds.receive.get(TargetChest.getreceive(player).getPlayer());
     }
 }

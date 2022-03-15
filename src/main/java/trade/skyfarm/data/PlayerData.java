@@ -1,20 +1,28 @@
 package trade.skyfarm.data;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import trade.skyfarm.SkyFarm;
-import trade.skyfarm.gui.Type;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class PlayerData {
 
-    private Type type = Type.Plus;
     private int Coin;
     private Player player;
+    private Player request;
     private readytype ready = readytype.NotReady;
+    private Inventory inv = null;
+    private Inventory menu = null;
     private ArrayList<ItemStack> items = new ArrayList<>();
+    private boolean isSetCoin = false;
+    private boolean isOpen = false;
 
     public PlayerData(Player player){
         this.player = player;
@@ -24,98 +32,96 @@ public class PlayerData {
         return Coin;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public void addCoin(int Coin){
-        this.Coin += Coin;
-    }
-
     public void SetCoins(int coin){
-        if(coin != 0){
-            switch (type){
-                case Plus:
-                    Coin += coin;
-                    break;
-                case Minus:
-                    if(!(Coin - coin < 0)){
-                        Coin -= coin;
-                    }
-                    break;
-                case Multiply:
-
-                    break;
-            }
-        } else{
-            this.Coin = coin;
-        }
-
+        this.Coin = coin;
     }
 
     public Player getPlayer() {
         return player;
     }
 
-    public void MinusCoin(int Coin){
-        this.Coin -= Coin;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public Material Change(){
-        if(getCoin() < 1000){
-            return Material.GOLD_INGOT;
-        } else if (getCoin() < 10000 ) {
-            return Material.EMERALD;
-        } else if (getCoin() < 100000) {
-            return Material.DIAMOND;
-        }  else if (getCoin() < 1000000 ) {
-            return Material.DIAMOND_BLOCK;
-        } else{
-            return Material.DIAMOND_BLOCK;
-        }
-
-    }
-
-    public Material Ready(){
-        switch (ready){
-            case Ready:
-                return Material.LIME_DYE;
-             case NotReady:
-                return Material.GRAY_DYE;
-            case Accept:
-                return Material.LIME_DYE;
-            default:
-                return Material.GRAY_DYE;
-        }
-    }
-
     public readytype getReady() {
         return ready;
     }
 
-    public void setReady(Player player, Player Target, readytype ready) {
-        if(this.player == player){
+    public void setReady(readytype ready) {
             this.ready = ready;
-        } else{
-            player.sendMessage(SkyFarm.prefix + " 상대의 상태를 조절 할 수 없습니다.");
+    }
+
+    public ItemStack enchant(ItemStack item){
+
+        item.addUnsafeEnchantment(Enchantment.LURE, 1);
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(itemMeta);
+        return item;
+    }
+
+    public Inventory createInv(Player player){
+        if(this.inv == null){
+            Inventory inv = Bukkit.createInventory(null,54,  player.getDisplayName());
+            this.inv = inv;
+            return inv;
         }
-
+        return null;
     }
 
-    public ItemStack getItems(int i) {
-        return items.get(i);
+    public Inventory getInv() {
+        return inv;
     }
 
-    public void addItem(ItemStack item){
-        items.add(item);
+    public Inventory OpenMenu(Player player){
+        player.openInventory(menu);
+        return menu;
+    }
+    public void setMenu(Inventory menu) {
+        this.menu = menu;
+    }
+    public boolean isSetCoin() {
+        return isSetCoin;
+    }
+    public void setisSetCoin(boolean setCoin) {
+        isSetCoin = setCoin;
+    }
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
+    public boolean isOpen() {
+        return isOpen;
     }
 
-    public void removeItem(ItemStack item){
-        items.remove(item);
+    public void setRequest(Player request) {
+        this.request = request;
     }
+
+    public Player getRequest() {
+        return request;
+    }
+
+    public ItemStack addContent(){
+        for(ItemStack inven : getInv().getContents()){
+            try {
+                if(!(inven == null)){
+                    player.getInventory().addItem(inven);
+                    player.sendMessage("거래가 취소되어 아이템을 받았습니다!");
+                    return inven;
+                }
+
+            }catch (NullPointerException e){
+                player.sendMessage("§c아이템이 없습니다");
+            }
+
+        }
+        return null;
+    }
+    public void End(){
+         player.closeInventory();
+        request.closeInventory();
+    }
+    public String Format(){
+        DecimalFormat format = new DecimalFormat("###,###");
+        return format.format(getCoin());
+    }
+
 }
 
