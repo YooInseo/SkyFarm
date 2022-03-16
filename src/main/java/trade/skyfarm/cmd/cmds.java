@@ -22,6 +22,7 @@ public class cmds implements CommandExecutor {
      *  InventoryMenu :: Showing inventory
      *
      */
+
     private HashMap<UUID,Long> cooldown = new HashMap<>();
     private int cooltimes = 5;
     public static HashMap<UUID, PlayerData> receive = new HashMap<>();
@@ -34,11 +35,6 @@ public class cmds implements CommandExecutor {
         if(args.length != 0){
             switch (args[0]){
                 case "요청":
-
-                    /**
-                        Request's target = Accept's player
-
-                     */
                     Player target = Bukkit.getPlayer(args[1]);
                     if(target.equals(player)){
                         player.sendMessage(SkyFarm.prefix + "§c자기 자신에게 거래 요청은 불가능 합니다");
@@ -88,19 +84,14 @@ public class cmds implements CommandExecutor {
                             }
                         }
                      } else{
-                             player.sendMessage(SkyFarm.prefix  + "§7요청 거래가 없습니다!");
+                         player.sendMessage(SkyFarm.prefix  + "§7요청 거래가 없습니다!");
                      }
                     break;
                 case "거절":
-
                     if(this.receive.containsKey(player.getUniqueId())){
                         player.sendMessage(SkyFarm.prefix + TargetChest.getreceive(player).getPlayer().getName() + " §7님의 거래를 거절 하였습니다");
                         TargetChest.getreceive(player).getPlayer().sendMessage(SkyFarm.prefix + player.getName() + " §7님이 거래를 거절 하였습니다.");
-
                         this.receive.remove(player.getUniqueId());
-//                         .sendMessage(SkyFarm.prefix  +  player.getName() + " §7님이 거래를 거절하였습니다.");
-
-//                        player.sendMessage(SkyFarm.prefix  +  TargetChest.GetReqeust(player).getName() + " §7님의 거래를 취소하였습니다.");
                      } else{
                         player.sendMessage(SkyFarm.prefix + " §c받은 요청이 없습니다.");
                     }
@@ -110,7 +101,6 @@ public class cmds implements CommandExecutor {
             player.sendMessage(SkyFarm.prefix + "§7/거래 요청 <닉네임>");
             player.sendMessage(SkyFarm.prefix + "§7/거래 거절 <닉네임>");
             player.sendMessage(SkyFarm.prefix + "§7/거래 수락");
-            
         }
         return false;
     }

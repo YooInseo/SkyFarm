@@ -32,13 +32,15 @@ public class TargetChest {
                     if(getreceive(player).getReady().equals(readytype.Accept) && getreceive(request).getReady().equals(readytype.Accept)){
                         player.sendMessage(SkyFarm.prefix + "§b§l거래를 수락하였습니다!");
                         request.sendMessage(SkyFarm.prefix + "§b§l거래를 수락하였습니다!");
+                        player.closeInventory();
+                        request.closeInventory();
                         cmds.receive.remove(player.getUniqueId());
                         cmds.receive.remove(request.getUniqueId());
                     } else{
-                        itemStack(Material.CHEST, player.getDisplayName(), Arrays.asList("","§b거래 상태 설정 §7(쉬프트 클릭)", Type(player)   , "", "§c인벤토리보다 많은 아이템은 바구니로 들어갑니다!",  "§7(*바구니 미소지일시 아이템 소멸)*"),1,11,inv);
+                        itemStack(Material.CHEST, player.getName(), Arrays.asList("","§b(쉬프트+클릭) §7거래 상태 설정  ", "      " +Type(player)   , "", "§c인벤토리보다 많은 아이템은 바구니로 들어갑니다!",  "§7(*바구니 미소지일시 아이템 소멸)*"),1,11,inv);
                         itemStack(Material.GOLD_INGOT, "§e§l거래금", Arrays.asList( ChatColor.WHITE + player.getDisplayName() + ChatColor.GRAY +" > " +ChatColor.GOLD + GetCoin(player) + "냥",
-                                ChatColor.WHITE + request.getDisplayName() + ChatColor.GRAY +" > " +ChatColor.GOLD + GetCoin(request) + "냥" ,"§7(클릭하여 §e금액 §7설정)"),1,13,inv);
-                        itemStack(Material.CHEST, request.getDisplayName(),Arrays.asList("","§b거래 상태 설정 §7(쉬프트 클릭)", Type(request)  ,  "", "§c인벤토리보다 많은 아이템은 바구니로 들어갑니다!", "§7(*바구니 미소지일시 아이템 소멸)*"),1,15,inv);
+                                ChatColor.WHITE + request.getName() + ChatColor.GRAY +" > " +ChatColor.GOLD + GetCoin(request) + "냥" ,"§7(클릭하여 §e금액 §7설정)"),1,13,inv);
+                        itemStack(Material.CHEST, request.getName(),Arrays.asList("","§b(쉬프트+클릭) §7거래 상태 설정" ,"(클릭) §7아이템 확인 or 넣기","      " + Type(request)  ,  "", "§c인벤토리보다 많은 아이템은 바구니로 들어갑니다!", "§7(*바구니 미소지일시 아이템 소멸)*"),1,15,inv);
                     }
                 }
             }
@@ -53,7 +55,6 @@ public class TargetChest {
         request.openInventory(inv);
         player.openInventory(inv);
     }
-
     public static String Type(Player player) {
         if (cmds.receive.containsKey(player.getUniqueId())) {
             switch (getreceive(player).getReady()) {
@@ -75,7 +76,6 @@ public class TargetChest {
         }
         return "";
     }
-
     public static  ItemStack itemStack(Material material, String name, List<String> lore, int stack, int loc, Inventory inv){
         ItemStack item = new ItemStack(material,stack);
         ItemMeta meta = item.getItemMeta();
@@ -85,23 +85,14 @@ public class TargetChest {
         inv.setItem(loc,item);
         return item;
     }
-
     public static PlayerData getreceive(Player player){
-        long startTime = System.currentTimeMillis();
-
-
         if(cmds.receive.containsKey(player.getUniqueId())){
-            long endTime = System.currentTimeMillis();
-            System.out.println((endTime - startTime));
-            return cmds.receive.get(player.getUniqueId());
+              return cmds.receive.get(player.getUniqueId());
 
         } else{
             return cmds.receive.get(player.getUniqueId());
-
         }
-
     }
-
     public static Player GetReqeust(Player player){
         return getreceive(player).getRequest();
     }

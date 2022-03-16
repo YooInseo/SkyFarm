@@ -1,41 +1,44 @@
 package trade.skyfarm;
 
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import trade.skyfarm.cmd.cmds;
 import trade.skyfarm.events.ChatEvent;
 import trade.skyfarm.events.InventoryClick;
 import trade.skyfarm.events.InventoryClose;
-
-import java.text.DecimalFormat;
 import java.util.Arrays;
 
 public final class SkyFarm extends JavaPlugin {
 
-
     public final static String prefix =  "§cSystem > §f";
-
     public static SkyFarm plugin;
-    @Override
+    private Economy econ;
+
     public void onEnable() {
-        // Plugin startup logic
         plugin = this;
         this.getCommand("거래").setExecutor(new cmds());
-
         Listener[] listeners = new Listener[]{new InventoryClick(), new InventoryClose(), new ChatEvent()};
         PluginManager pm = Bukkit.getPluginManager();
         Arrays.stream(listeners).forEach(classes->{pm.registerEvents(classes,this);});
+        setupEconomy();
     }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    private boolean setupEconomy() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            Bukkit.getConsoleSender().sendMessage("§c이 플러그인은 Vault와 Economy플러그인이 필요합니다!");
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
     }
-    public static String format(int a){
-        DecimalFormat format = new DecimalFormat("###,###");
-
-        return format.format(a);
+    public Economy getEconomy() {
+        return econ;
     }
 }

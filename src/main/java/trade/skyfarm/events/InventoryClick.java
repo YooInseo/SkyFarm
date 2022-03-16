@@ -1,17 +1,28 @@
 package trade.skyfarm.events;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import trade.skyfarm.SkyFarm;
-import trade.skyfarm.cmd.cmds;
-import trade.skyfarm.data.PlayerData;
 import trade.skyfarm.data.readytype;
 import trade.skyfarm.gui.TargetChest;
 
+//                                 } else{
+//                                     TargetChest.getreceive(player).setReady(readytype.Accept);
+//                                 }
+//                                 cmds.receive.get(TargetChest.getreceive(player).getPlayer().getUniqueId()).setReady(readytype.Accept);
+//                                 if(TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Ready)){
+//                                     TargetChest.getreceive(player).setReady(readytype.Accept);
+//                                     cmds.receive.get(TargetChest.getreceive(player).getPlayer().getUniqueId()).setReady(readytype.Accept);
+//                                     TargetChest.getreceive(player).getPlayer().closeInventory();
+//                                     player.closeInventory();
+//                                 } else if(TargetChest.getreceive(player).getReady().equals(readytype.Ready)) {
+//
+//                                 }
 public class InventoryClick implements Listener {
 
     @EventHandler
@@ -28,11 +39,11 @@ public class InventoryClick implements Listener {
                      return;
                  } else{
                      if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§e§l거래금")){
-                         player.sendMessage(SkyFarm.prefix + "§a상대방에게 줄 금액을 입력하세요!");
+                         player.sendMessage(SkyFarm.prefix + "§e상대방에게 줄 금액을 입력하세요!");
                          TargetChest.getreceive(player).setisSetCoin(true);
                          player.closeInventory();
                      } else{
-                         Player Target = Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName());
+                         Player Target = Bukkit.getPlayer(  event.getCurrentItem().getItemMeta().getDisplayName());
                          if(!event.isShiftClick()){
                              if(!player.equals(Target)){
                                 player.openInventory(TargetChest.getreceive(Target).getInv());
@@ -46,20 +57,19 @@ public class InventoryClick implements Listener {
                              }
                          } else{
                              if(player.equals(Target)){
-
+                                 if(TargetChest.getreceive(player).getReady().equals(readytype.Ready) && TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Ready)) {
+                                     TargetChest.getreceive(player).setReady(readytype.Accept);
+                                 } else{
+                                     if(TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Accept)){
+                                         TargetChest.getreceive(player).setReady(readytype.Accept);
+                                     }
+                                 }
                                  switch (TargetChest.getreceive(player).getReady()){
                                      case NotReady:
                                          TargetChest.getreceive(player).setReady(readytype.Ready);
                                          break;
                                      case Ready:
                                          TargetChest.getreceive(player).setReady(readytype.NotReady);
-                                         break;
-                                 }
-                                 if(TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Ready) && TargetChest.getreceive(player).getReady().equals(readytype.Ready)){
-                                     TargetChest.getreceive(player).setReady(readytype.Accept);
-                                     cmds.receive.get(TargetChest.getreceive(player).getPlayer().getUniqueId()).setReady(readytype.Accept);
-                                     TargetChest.getreceive(player).getPlayer().closeInventory();
-                                     player.closeInventory();
                                  }
                              }
                          }
@@ -72,8 +82,5 @@ public class InventoryClick implements Listener {
                  event.setCancelled(true);
              }
         }
-    }
-    public PlayerData getTargetData(Player player){
-        return cmds.receive.get(TargetChest.getreceive(player).getPlayer());
     }
 }

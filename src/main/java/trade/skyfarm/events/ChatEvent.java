@@ -18,11 +18,14 @@ public class ChatEvent implements Listener {
                 if(CurrentCoin < 0){
                     player.sendMessage(SkyFarm.prefix + "§c다시 입력해주세요! §7(음수 포함X)");
                 } else{
-                    player.sendMessage(SkyFarm.prefix + "§e당신이 줄 금액은 §6§l" + CurrentCoin + "§e냥 입니다.");
-                    TargetChest.getreceive(player).SetCoins(CurrentCoin);
-                    TargetChest.getreceive(player).OpenMenu(player);
-                    TargetChest.getreceive(player).setisSetCoin(false);
-                }
+                    if(SkyFarm.plugin.getEconomy().getBalance(player.getPlayer()) > TargetChest.getreceive(player).getCoin()){
+                        TargetChest.getreceive(player).SetCoins(CurrentCoin);
+                        TargetChest.getreceive(player).OpenMenu(player);
+                        TargetChest.getreceive(player).setisSetCoin(false);
+                    } else{
+                        player.sendMessage(SkyFarm.prefix + "§7사기를 칠 생각이신가요?? 암행어사 출도요!!");
+                    }
+                 }
                 event.setCancelled(true);
 
             } catch (NumberFormatException e){
