@@ -37,7 +37,10 @@ public class InventoryClose implements Listener {
                                     player.sendMessage(SkyFarm.prefix + "§7거래가 취소되었습니다!");
                                     TargetChest.getreceive(player).getRequest().closeInventory();
                                     TargetChest.getreceive(player).getRequest().sendMessage(SkyFarm.prefix + "§7거래가 취소되었습니다!");
-                                    TargetChest.getreceive(player).addContent();
+
+                                    
+                                    cmds.receive.remove(TargetChest.getreceive(player).getRequest().getUniqueId());
+                                    cmds.receive.remove(player.getUniqueId());
                                 } else{
                                     TargetChest.getreceive(player).getRequest().sendMessage(SkyFarm.prefix + "§7거래가 취소되었습니다!"); //상대 플레이어 불러오기
                                 }
@@ -48,9 +51,11 @@ public class InventoryClose implements Listener {
                             if(title.equalsIgnoreCase(player.getDisplayName())){
                                 TargetChest.getreceive(player).OpenMenu(player);
                                 TargetChest.getreceive(player).setOpen(false);
-                            } else if(title.equalsIgnoreCase(TargetChest.getreceive(player).getRequest().getDisplayName())){/** 2번의 경우의 수일때 */
-                                TargetChest.getreceive(player).OpenMenu(player);
-                                TargetChest.getreceive(player).setOpen(false);
+                            }else if(!TargetChest.getreceive(player).getPlayer().getDisplayName().equalsIgnoreCase("")){/** 2번의 경우의 수일때  Request Player 가 Null 이 아닐경우*/
+                                if(title.equalsIgnoreCase( TargetChest.getreceive(player).getPlayer().getDisplayName())){
+                                    TargetChest.getreceive(player).OpenMenu(player);
+                                    TargetChest.getreceive(player).setOpen(false);
+                                }
                             }
                         }
                     }

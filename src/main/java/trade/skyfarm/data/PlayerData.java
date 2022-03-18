@@ -1,13 +1,13 @@
 package trade.skyfarm.data;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import trade.skyfarm.SkyFarm;
-import trade.skyfarm.gui.TargetChest;
-
+import org.bukkit.inventory.meta.SkullMeta;
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class PlayerData {
 
@@ -90,21 +90,43 @@ public class PlayerData {
         return request;
     }
 
-    public ItemStack addContent(){
-        for(ItemStack inven : inv.getContents()){
-            try {
-                if(!(inven == null)){
-                    player.getInventory().addItem(inven);
-                    player.sendMessage("거래가 취소되어 아이템을 받았습니다!");
-                    return inven;
-                }
-            }catch (NullPointerException e){
-                player.sendMessage("§c아이템이 없습니다");
-            }
-        }
+    public ItemStack addContent(Player player){
+
         return null;
     }
 
+    public ItemStack giveItemToOther(){
+        ItemStack item = null;
+        for(ItemStack items : getInv().getContents().clone()){
+            if(items != null){
+                item = items;
+                player.getInventory().addItem(items);
+            }
+        }
+        return item;
+    }
+
+    public ItemStack giveSelf(){
+        ItemStack item = null;
+        for(ItemStack items : getInv().getContents().clone()){
+            if(items != null){
+                item = items;
+                request.getInventory().addItem(items);
+            }
+        }
+        return item;
+    }
+
+    public ItemStack playerhead(Inventory inv, List<String> lore  , int Loc){
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD); // Create a new ItemStack of the Player Head type.
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta(); // Get the created item's ItemMeta and cast it to SkullMeta so we can access the skull properties
+        skullMeta.setDisplayName( player.getName());
+        skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getName())); // Set the skull's owner so it will adapt the skin of the provided username (case sensitive).
+        skullMeta.setLore(lore);
+        skull.setItemMeta(skullMeta); // Apply the modified meta to the initial created item
+        inv.setItem(Loc,skull);
+        return skull;
+    }
     public String Format(){
         DecimalFormat format = new DecimalFormat("###,###");
         return format.format(getCoin());

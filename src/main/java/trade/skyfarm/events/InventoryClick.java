@@ -1,28 +1,16 @@
 package trade.skyfarm.events;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import trade.skyfarm.SkyFarm;
+import trade.skyfarm.cmd.cmds;
 import trade.skyfarm.data.readytype;
 import trade.skyfarm.gui.TargetChest;
 
-//                                 } else{
-//                                     TargetChest.getreceive(player).setReady(readytype.Accept);
-//                                 }
-//                                 cmds.receive.get(TargetChest.getreceive(player).getPlayer().getUniqueId()).setReady(readytype.Accept);
-//                                 if(TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Ready)){
-//                                     TargetChest.getreceive(player).setReady(readytype.Accept);
-//                                     cmds.receive.get(TargetChest.getreceive(player).getPlayer().getUniqueId()).setReady(readytype.Accept);
-//                                     TargetChest.getreceive(player).getPlayer().closeInventory();
-//                                     player.closeInventory();
-//                                 } else if(TargetChest.getreceive(player).getReady().equals(readytype.Ready)) {
-//
-//                                 }
 public class InventoryClick implements Listener {
 
     @EventHandler
@@ -43,43 +31,48 @@ public class InventoryClick implements Listener {
                          TargetChest.getreceive(player).setisSetCoin(true);
                          player.closeInventory();
                      } else{
-                         Player Target = Bukkit.getPlayer(  event.getCurrentItem().getItemMeta().getDisplayName());
+                         Player CurrentPlayer = Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName());
                          if(!event.isShiftClick()){
-                             if(!player.equals(Target)){
-                                player.openInventory(TargetChest.getreceive(Target).getInv());
-                                TargetChest.getreceive(Target).setOpen(true);
+                             if(!player.equals(CurrentPlayer)){
+                                player.openInventory(TargetChest.getreceive(CurrentPlayer).getInv());
+                                TargetChest.getreceive(CurrentPlayer).setOpen(true);
                                 TargetChest.getreceive(player).setOpen(true);
 
                              } else{
                                  player.openInventory(TargetChest.getreceive(player).getInv());
                                  TargetChest.getreceive(player).setOpen(true);
-                                 TargetChest.getreceive(Target).setOpen(true);
+                                 TargetChest.getreceive(CurrentPlayer).setOpen(true);
+
                              }
-                         } else{
-                             if(player.equals(Target)){
-                                 if(TargetChest.getreceive(player).getReady().equals(readytype.Ready) && TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Ready)) {
-                                     TargetChest.getreceive(player).setReady(readytype.Accept);
-                                 } else{
-                                     if(TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Accept)){
-                                         TargetChest.getreceive(player).setReady(readytype.Accept);
+                         } else{ /** 플레이어가 수락을 누를 경우 */
+                             if(player.equals(CurrentPlayer)) {
+                                 if(!TargetChest.getreceive(CurrentPlayer).getReady().equals(readytype.Ready) && !TargetChest.getreceive(CurrentPlayer).getReady().equals(readytype.Ready)){
+                                     switch (TargetChest.getreceive(CurrentPlayer).getReady()){
+                                         case NotReady:
+                                             TargetChest.getreceive(CurrentPlayer).setReady(readytype.Ready);
+                                             break;
+                                         case Ready:
+                                             TargetChest.getreceive(CurrentPlayer).setReady(readytype.NotReady);
+                                             break;
                                      }
-                                 }
-                                 switch (TargetChest.getreceive(player).getReady()){
-                                     case NotReady:
-                                         TargetChest.getreceive(player).setReady(readytype.Ready);
-                                         break;
-                                     case Ready:
-                                         TargetChest.getreceive(player).setReady(readytype.NotReady);
+                                 } else{
+                                     if(!TargetChest.getreceive(CurrentPlayer).getReady().equals(readytype.Accept)){
+                                         TargetChest.getreceive(CurrentPlayer).setReady(readytype.Accept);
+                                     }
                                  }
                              }
                          }
                      }
                      event.setCancelled(true);
                  }
+                 if(cmds.receive.containsKey(player.getUniqueId())){
              } else if(title.equalsIgnoreCase(player.getName())){
+                     player.sendMessage("자신의 닉네임인 상자");
                  event.setCancelled(false);
-             } else if(title.equalsIgnoreCase(TargetChest.getreceive(player).getRequest().getDisplayName())){
-                 event.setCancelled(true);
+             } else if(  title.equalsIgnoreCase(TargetChest.GetReqeust(player).getDisplayName())){
+                         event.setCancelled(true);
+
+                 }
              }
         }
     }
