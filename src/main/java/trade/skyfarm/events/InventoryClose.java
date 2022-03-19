@@ -37,8 +37,6 @@ public class InventoryClose implements Listener {
                                     player.sendMessage(SkyFarm.prefix + "§7거래가 취소되었습니다!");
                                     TargetChest.getreceive(player).getRequest().closeInventory();
                                     TargetChest.getreceive(player).getRequest().sendMessage(SkyFarm.prefix + "§7거래가 취소되었습니다!");
-
-                                    
                                     cmds.receive.remove(TargetChest.getreceive(player).getRequest().getUniqueId());
                                     cmds.receive.remove(player.getUniqueId());
                                 } else{

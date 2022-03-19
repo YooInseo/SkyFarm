@@ -32,13 +32,13 @@ public class InventoryClick implements Listener {
                          player.closeInventory();
                      } else{
                          Player CurrentPlayer = Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName());
-                         if(!event.isShiftClick()){
+                         if(!event.isShiftClick()){ /** 플레이어가 자신의 상자를 열 경우*/
                              if(!player.equals(CurrentPlayer)){
                                 player.openInventory(TargetChest.getreceive(CurrentPlayer).getInv());
                                 TargetChest.getreceive(CurrentPlayer).setOpen(true);
                                 TargetChest.getreceive(player).setOpen(true);
 
-                             } else{
+                             } else{  /** 플레이어가 상대방의 상자를 열 경우*/
                                  player.openInventory(TargetChest.getreceive(player).getInv());
                                  TargetChest.getreceive(player).setOpen(true);
                                  TargetChest.getreceive(CurrentPlayer).setOpen(true);
@@ -56,7 +56,8 @@ public class InventoryClick implements Listener {
                                              break;
                                      }
                                  } else{
-                                     if(!TargetChest.getreceive(CurrentPlayer).getReady().equals(readytype.Accept)){
+                                     if(TargetChest.getreceive(CurrentPlayer).getReady().equals(readytype.Ready) && TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Ready)
+                                             || TargetChest.getreceive(CurrentPlayer).getReady().equals(readytype.Accept) || TargetChest.getreceive(TargetChest.GetReqeust(player)).getReady().equals(readytype.Accept)){
                                          TargetChest.getreceive(CurrentPlayer).setReady(readytype.Accept);
                                      }
                                  }
@@ -65,13 +66,12 @@ public class InventoryClick implements Listener {
                      }
                      event.setCancelled(true);
                  }
-                 if(cmds.receive.containsKey(player.getUniqueId())){
-             } else if(title.equalsIgnoreCase(player.getName())){
-                     player.sendMessage("자신의 닉네임인 상자");
-                 event.setCancelled(false);
-             } else if(  title.equalsIgnoreCase(TargetChest.GetReqeust(player).getDisplayName())){
+             } else{ /**상대방 인벤토리를 눌렀을때*/
+                 Player CurrentPlayer = Bukkit.getPlayer(title);
+                 if(!player.equals(CurrentPlayer)){
+                     if(cmds.receive.containsKey(player.getUniqueId())){
                          event.setCancelled(true);
-
+                     }
                  }
              }
         }
